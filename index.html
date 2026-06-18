@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Psychopharmacology Treatment Planner</title>
+
+    <!-- Styles and Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="header-inner">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>Psychopharmacology Treatment Planner</span>
+                </div>
+                <div class="user-controls">
+                    <span id="userDisplay"></span>
+                    <button id="logoutBtn" class="btn btn-danger">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'medicationGuide')"><i class="fas fa-pills"></i> Medication Guide</button>
+            <button class="tablinks" onclick="openTab(event, 'diagnosisAssessment')"><i class="fas fa-clipboard-list"></i> Diagnosis & Assessment</button>
+            <button class="tablinks" onclick="openTab(event, 'treatmentPlanner')"><i class="fas fa-tasks"></i> Treatment Planner</button>
+            <button class="tablinks" onclick="openTab(event, 'dosingCalculator')"><i class="fas fa-calculator"></i> Dosing Calculator</button>
+            <button class="tablinks" onclick="openTab(event, 'receptorReference')"><i class="fas fa-microscope"></i> Receptor Reference</button>
+            <button class="tablinks" onclick="openTab(event, 'distributionFunctions')"><i class="fas fa-chart-bar"></i> Distribution Functions</button>
+        </div>
+
+        <main>
+            <!-- Medication Guide Tab -->
+            <div id="medicationGuide" class="tabcontent">
+                <h2><i class="fas fa-pills"></i> Medication Guide</h2>
+                <div class="assessment-form">
+                    <div class="form-group">
+                        <label for="medicationSearch">Search Medications</label>
+                        <input type="text" id="medicationSearch" class="form-control" placeholder="Enter medication name or class...">
+                    </div>
+                </div>
+                
+                <div id="medicationList" class="medication-list">
+                    <!-- Medications will be populated here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Diagnosis & Assessment Tab -->
+            <div id="diagnosisAssessment" class="tabcontent">
+                <h2><i class="fas fa-clipboard-list"></i> Diagnosis & Assessment</h2>
+                
+                <div class="assessment-form">
+                    <h3>Patient Information</h3>
+                    <div class="form-group">
+                        <label for="patientAge">Age</label>
+                        <input type="number" id="patientAge" class="form-control" min="1" max="120">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patientGender">Gender</label>
+                        <select id="patientGender" class="form-control">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="medicalHistory">Medical History</label>
+                        <textarea id="medicalHistory" class="form-control" placeholder="Relevant medical history, meds, allergies, substance use, pregnancy status, labs..."></textarea>
+                    </div>
+
+                    <h3>Clinical Context (screening support)</h3>
+                    <div class="form-group">
+                        <label for="symptomDurationWeeks">Primary symptom duration (weeks)</label>
+                        <input type="number" id="symptomDurationWeeks" class="form-control" min="0" step="1" placeholder="e.g., 6">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="severityLevel">Overall severity (clinician-rated)</label>
+                        <select id="severityLevel" class="form-control">
+                            <option value="">Select</option>
+                            <option value="mild">Mild</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="severe">Severe</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="functionalImpairment">Functional impairment</label>
+                        <select id="functionalImpairment" class="form-control">
+                            <option value="">Select</option>
+                            <option value="none">None</option>
+                            <option value="mild">Mild</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="severe">Severe</option>
+                        </select>
+                    </div>
+
+                    <h3>Risk flags (documentation)</h3>
+                    <div class="symptom-checklist" id="riskFlags">
+                        <h4>Safety</h4>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="riskSI" value="riskSI">
+                            <label for="riskSI">Suicidal ideation</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="riskPlan" value="riskPlan">
+                            <label for="riskPlan">Suicidal plan / preparation</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="riskIntent" value="riskIntent">
+                            <label for="riskIntent">Suicidal intent</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="riskHI" value="riskHI">
+                            <label for="riskHI">Homicidal ideation</label>
+                        </div>
+                        <h4>Clinical modifiers</h4>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="flagMania" value="flagMania">
+                            <label for="flagMania">Mania/hypomania concern (e.g., ↓ need for sleep)</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="flagPsychosis" value="flagPsychosis">
+                            <label for="flagPsychosis">Psychosis concern</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="flagSubstance" value="flagSubstance">
+                            <label for="flagSubstance">Intoxication/withdrawal concern</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="flagPregnancy" value="flagPregnancy">
+                            <label for="flagPregnancy">Pregnancy/lactation consideration</label>
+                        </div>
+                    </div>
+                    
+                    <h3>Symptom Checklist</h3>
+                    <p>Select all symptoms that apply (this tool supports documentation; it does not diagnose).</p>
+                    
+                    <div class="symptom-checklist" id="moodSymptoms">
+                        <h4>Mood Symptoms</h4>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="depressedMood" value="depressedMood">
+                            <label for="depressedMood">Depressed mood</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="anhedonia" value="anhedonia">
+                            <label for="anhedonia">Anhedonia</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="elevatedMood" value="elevatedMood">
+                            <label for="elevatedMood">Elevated mood</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="irritability" value="irritability">
+                            <label for="irritability">Irritability</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="moodLability" value="moodLability">
+                            <label for="moodLability">Mood lability</label>
+                        </div>
+                    </div>
+                    
+                    <div class="symptom-checklist" id="anxietySymptoms">
+                        <h4>Anxiety Symptoms</h4>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="excessiveWorry" value="excessiveWorry">
+                            <label for="excessiveWorry">Excessive worry</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="panicAttacks" value="panicAttacks">
+                            <label for="panicAttacks">Panic attacks</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="socialAnxiety" value="socialAnxiety">
+                            <label for="socialAnxiety">Social anxiety</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="ocdSymptoms" value="ocdSymptoms">
+                            <label for="ocdSymptoms">OCD symptoms</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="ptsdSymptoms" value="ptsdSymptoms">
+                            <label for="ptsdSymptoms">PTSD symptoms</label>
+                        </div>
+                    </div>
+                    
+                    <div class="symptom-checklist" id="psychoticSymptoms">
+                        <h4>Psychotic Symptoms</h4>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="hallucinations" value="hallucinations">
+                            <label for="hallucinations">Hallucinations</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="delusions" value="delusions">
+                            <label for="delusions">Delusions</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="disorganizedSpeech" value="disorganizedSpeech">
+                            <label for="disorganizedSpeech">Disorganized speech</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="disorganizedBehavior" value="disorganizedBehavior">
+                            <label for="disorganizedBehavior">Disorganized behavior</label>
+                        </div>
+                        <div class="symptom-item">
+                            <input type="checkbox" id="negativeSymptoms" value="negativeSymptoms">
+                            <label for="negativeSymptoms">Negative symptoms</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Notes</label>
+                        <textarea id="additionalNotes" class="form-control" placeholder="Specifiers, prior trials, response/tolerability, preferences, monitoring considerations..."></textarea>
+                    </div>
+                    
+                    <button id="assessBtn" class="btn btn-primary">Assess Patient</button>
+                </div>
+                
+                <div id="assessmentResults" class="results-container" style="display: none;">
+                    <h3>Assessment Results</h3>
+                    <div id="diagnosisResults">
+                        <!-- Diagnosis will be populated here -->
+                    </div>
+                    <button id="generatePlanBtn" class="btn btn-success">Generate Treatment Plan</button>
+                </div>
+            </div>
+
+            <!-- Treatment Planner Tab -->
+            <div id="treatmentPlanner" class="tabcontent">
+                <h2><i class="fas fa-tasks"></i> Treatment Planner</h2>
+                
+                <div id="treatmentPlanContainer" class="results-container">
+                    <p>Complete the Diagnosis & Assessment section to generate a treatment plan.</p>
+                </div>
+            </div>
+
+            <!-- Dosing Calculator Tab -->
+            <div id="dosingCalculator" class="tabcontent">
+                <h2><i class="fas fa-calculator"></i> Dosing Calculator</h2>
+                
+                <div class="assessment-form">
+                    <div class="form-group">
+                        <label for="calcMedication">Medication</label>
+                        <select id="calcMedication" class="form-control">
+                            <option value="">Select a medication</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="calcPatientWeight">Patient Weight (kg)</label>
+                        <input type="number" id="calcPatientWeight" class="form-control" min="20" max="300">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="calcIndication">Indication</label>
+                        <select id="calcIndication" class="form-control">
+                            <option value="">Select indication</option>
+                            <option value="depression">Depression</option>
+                            <option value="anxiety">Anxiety</option>
+                            <option value="psychosis">Psychosis</option>
+                            <option value="bipolar">Bipolar Disorder</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="calcRenalFunction">Renal Function</label>
+                        <select id="calcRenalFunction" class="form-control">
+                            <option value="normal">Normal</option>
+                            <option value="mild">Mild impairment</option>
+                            <option value="moderate">Moderate impairment</option>
+                            <option value="severe">Severe impairment</option>
+                        </select>
+                    </div>
+                    
+                    <button id="calculateDoseBtn" class="btn btn-primary">Calculate Dose</button>
+                </div>
+                
+                <div id="doseResults" class="results-container" style="display: none;">
+                    <h3>Dosing Recommendation</h3>
+                    <div id="doseRecommendation">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receptor Reference Tab -->
+            <div id="receptorReference" class="tabcontent">
+                <h2><i class="fas fa-microscope"></i> Receptor Reference</h2>
+                
+                <div class="assessment-form">
+                    <div class="form-group">
+                        <label for="receptorSearch">Search Receptors</label>
+                        <input type="text" id="receptorSearch" class="form-control" placeholder="Enter receptor name...">
+                    </div>
+                </div>
+                
+                <div id="receptorInfo">
+                    <div class="medication-card">
+                        <h3>Common Neurotransmitter Receptors</h3>
+                        
+                        <h4>Dopamine Receptors</h4>
+                        <div class="receptor-grid">
+                            <div class="receptor-item">D1 <span class="receptor-affinity">(excitatory)</span></div>
+                            <div class="receptor-item">D2 <span class="receptor-affinity">(inhibitory)</span></div>
+                            <div class="receptor-item">D3</div>
+                            <div class="receptor-item">D4</div>
+                            <div class="receptor-item">D5</div>
+                        </div>
+                        
+                        <h4>Serotonin Receptors</h4>
+                        <div class="receptor-grid">
+                            <div class="receptor-item">5-HT1A <span class="receptor-affinity">(autoreceptor)</span></div>
+                            <div class="receptor-item">5-HT2A <span class="receptor-affinity">(hallucinogenic)</span></div>
+                            <div class="receptor-item">5-HT2C</div>
+                            <div class="receptor-item">5-HT3 <span class="receptor-affinity">(nausea)</span></div>
+                            <div class="receptor-item">5-HT4</div>
+                            <div class="receptor-item">5-HT6</div>
+                            <div class="receptor-item">5-HT7</div>
+                        </div>
+                        
+                        <h4>Other Receptors</h4>
+                        <div class="receptor-grid">
+                            <div class="receptor-item">α1-adrenergic</div>
+                            <div class="receptor-item">α2-adrenergic</div>
+                            <div class="receptor-item">β-adrenergic</div>
+                            <div class="receptor-item">H1 histamine</div>
+                            <div class="receptor-item">M1 muscarinic</div>
+                            <div class="receptor-item">NMDA glutamate</div>
+                            <div class="receptor-item">AMPA glutamate</div>
+                            <div class="receptor-item">GABA-A</div>
+                            <div class="receptor-item">GABA-B</div>
+                            <div class="receptor-item">μ-opioid</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribution Functions Section -->
+            <div id="distributionFunctions" class="tabcontent">
+                <h2>Distribution & Clinical Support Functions</h2>
+                
+                <!-- Weight-Based Distribution -->
+                <div class="distribution-card">
+                    <h3>Weight-Based Dosing Calculator</h3>
+                    <div class="form-group">
+                        <label for="patientWeight">Patient Weight (kg)</label>
+                        <input type="number" id="patientWeight" step="0.1" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="medicationSelect">Select Medication</label>
+                        <select id="medicationSelect">
+                            <option value="">Choose medication...</option>
+                            <option value="fluoxetine">Fluoxetine (Prozac)</option>
+                            <option value="sertraline">Sertraline (Zoloft)</option>
+                            <option value="venlafaxine">Venlafaxine (Effexor)</option>
+                            <option value="bupropion">Bupropion (Wellbutrin)</option>
+                        </select>
+                    </div>
+                    <button onclick="calculateWeightBasedDose()" class="btn btn-primary">Calculate Dose</button>
+                    <div id="weightBasedResult" class="result-box"></div>
+                </div>
+
+        <!-- Renal Function Adjustment -->
+                <div class="distribution-card">
+            <h3>Renal Function Dose Adjustment</h3>
+            <div class="form-group">
+                <label for="creatinineClearance">Creatinine Clearance (mL/min)</label>
+                <input type="number" id="creatinineClearance" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+                <label for="renalMedSelect">Select Medication</label>
+                <select id="renalMedSelect">
+                    <option value="">Choose medication...</option>
+                    <option value="lithium">Lithium</option>
+                    <option value="gabapentin">Gabapentin</option>
+                    <option value="pregabalin">Pregabalin</option>
+                </select>
+            </div>
+                    <button onclick="calculateRenalAdjustedDose()" class="btn btn-primary">Calculate Adjusted Dose</button>
+            <div id="renalAdjustmentResult" class="result-box"></div>
+                </div>
+
+        <!-- Drug Level Monitoring -->
+                <div class="distribution-card">
+            <h3>Therapeutic Drug Monitoring</h3>
+            <div class="form-group">
+                <label for="drugLevel">Current Drug Level</label>
+                <input type="number" id="drugLevel" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+                <label for="monitoringMedSelect">Select Medication</label>
+                <select id="monitoringMedSelect">
+                    <option value="">Choose medication...</option>
+                    <option value="lithium">Lithium</option>
+                    <option value="valproate">Valproate</option>
+                    <option value="carbamazepine">Carbamazepine</option>
+                    <option value="clozapine">Clozapine</option>
+                </select>
+            </div>
+                    <button onclick="evaluateDrugLevel()" class="btn btn-primary">Evaluate Level</button>
+            <div id="drugLevelResult" class="result-box"></div>
+                </div>
+
+        <!-- Drug Interaction Checker -->
+                <div class="distribution-card">
+            <h3>Drug Interaction Analysis</h3>
+            <div class="form-group">
+                <label>Select Current Medications</label>
+                <div class="checkbox-group" id="interactionMedList">
+                    <div><input type="checkbox" id="med1" value="fluoxetine"><label for="med1">Fluoxetine</label></div>
+                    <div><input type="checkbox" id="med2" value="lithium"><label for="med2">Lithium</label></div>
+                    <div><input type="checkbox" id="med3" value="clozapine"><label for="med3">Clozapine</label></div>
+                    <div><input type="checkbox" id="med4" value="valproate"><label for="med4">Valproate</label></div>
+                    <div><input type="checkbox" id="med5" value="carbamazepine"><label for="med5">Carbamazepine</label></div>
+                </div>
+            </div>
+                    <button onclick="checkInteractions()" class="btn btn-warning">Check Interactions</button>
+            <div id="interactionResult" class="result-box warning-box"></div>
+                </div>
+
+        <!-- Clinical Pearls and Warnings -->
+                <div class="distribution-card">
+            <h3>Clinical Decision Support</h3>
+            <div class="form-group">
+                <label for="clinicalScenario">Select Clinical Scenario</label>
+                <select id="clinicalScenario">
+                    <option value="">Choose scenario...</option>
+                    <option value="elderly">Elderly Patient (>65 years)</option>
+                    <option value="pregnancy">Pregnancy</option>
+                    <option value="hepatic">Hepatic Impairment</option>
+                    <option value="bleeding">Bleeding Risk</option>
+                </select>
+            </div>
+                    <button onclick="getClinicalGuidance()" class="btn btn-info">Get Guidance</button>
+            <div id="clinicalGuidanceResult" class="result-box info-box"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-inner">
+                <div>
+                    <div style="font-weight: 800; margin-bottom: 6px;">Safety & scope</div>
+                    <small>
+                        This tool is for education and documentation support only and is not a substitute for clinical judgment,
+                        local protocols, product labeling, or specialist consultation. Always verify dosing, interactions, contraindications,
+                        pregnancy/lactation safety, and monitoring with authoritative sources.
+                    </small>
+                </div>
+                <div>
+                    <div style="font-weight: 800; margin-bottom: 6px;">Evidence-friendly references (links)</div>
+                    <small>
+                        APA Practice Guidelines, NICE Guidelines, WHO mhGAP, FDA labels, and local formulary policies.
+                    </small>
+                    <div style="margin-top: 8px;">
+                        <a href="https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines" target="_blank" rel="noreferrer">APA</a>
+                        · <a href="https://www.nice.org.uk/guidance" target="_blank" rel="noreferrer">NICE</a>
+                        · <a href="https://www.who.int/publications/i/item/9789241549790" target="_blank" rel="noreferrer">WHO mhGAP</a>
+                        · <a href="https://dailymed.nlm.nih.gov/dailymed/" target="_blank" rel="noreferrer">DailyMed (FDA labels)</a>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <small>© 2026 Psychopharmacology Treatment Planner.</small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
